@@ -1,46 +1,45 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import withAuth from '../../HOC/withAuth'
 import Message from '../../components/Message'
 import Loader from 'react-loader-spinner'
-import { FaPenAlt, FaPlus, FaTrash } from 'react-icons/fa'
-import Pagination from '../../components/Pagination'
-import useUsers from '../../api/users'
-import useGroups from '../../api/groups'
-import { useQueryClient } from 'react-query'
+import {
+  FaCheckCircle,
+  FaPenAlt,
+  FaPlus,
+  FaTimesCircle,
+  FaTrash,
+} from 'react-icons/fa'
+
+import useLocations from '../../api/locations'
 
 import { confirmAlert } from 'react-confirm-alert'
 import { Confirm } from '../../components/Confirm'
 import { useForm } from 'react-hook-form'
 import {
-  dynamicInputSelect,
-  inputEmail,
-  inputPassword,
+  inputCheckBox,
   inputText,
+  inputTextArea,
 } from '../../utils/dynamicForm'
-import moment from 'moment'
+import UploadExcel from '../../components/UploadExcel'
 
-const Users = () => {
-  const [page, setPage] = useState(1)
-  const { getUsers, updateUser, addUser, deleteUser } = useUsers(page)
-  const { getGroups } = useGroups()
-
+const Location = () => {
+  const { getLocations, updateLocation, addLocation, deleteLocation } =
+    useLocations()
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: {},
+    defaultValues: {
+      isActive: true,
+    },
   })
 
-  const queryClient = useQueryClient()
-
-  const { data, isLoading, isError, error } = getUsers
-  const { data: groupData } = getGroups
+  const { data, isLoading, isError, error } = getLocations
 
   const {
     isLoading: isLoadingUpdate,
@@ -48,7 +47,7 @@ const Users = () => {
     error: errorUpdate,
     isSuccess: isSuccessUpdate,
     mutateAsync: updateMutateAsync,
-  } = updateUser
+  } = updateLocation
 
   const {
     isLoading: isLoadingDelete,
@@ -56,7 +55,7 @@ const Users = () => {
     error: errorDelete,
     isSuccess: isSuccessDelete,
     mutateAsync: deleteMutateAsync,
-  } = deleteUser
+  } = deleteLocation
 
   const {
     isLoading: isLoadingAdd,
@@ -64,7 +63,7 @@ const Users = () => {
     error: errorAdd,
     isSuccess: isSuccessAdd,
     mutateAsync: addMutateAsync,
-  } = addUser
+  } = addLocation
 
   const [id, setId] = useState(null)
   const [edit, setEdit] = useState(false)
@@ -88,61 +87,58 @@ const Users = () => {
       ? updateMutateAsync({
           _id: id,
           name: data.name,
-          email: data.email,
-          password: data.password,
-          group: data.group,
+          description: data.description,
+          isActive: data.isActive,
         })
       : addMutateAsync(data)
   }
 
-  const editHandler = (user) => {
-    setId(user._id)
+  const editHandler = (location) => {
+    setId(location._id)
     setEdit(true)
-    setValue('name', user.name)
-    setValue('email', user.email)
-    setValue('group', user.group)
+    setValue('name', location.name)
+    setValue('description', location.description)
+    setValue('isActive', location.isActive)
   }
-
-  useEffect(() => {
-    const refetch = async () => {
-      await queryClient.prefetchQuery('users')
-    }
-    refetch()
-  }, [page, queryClient])
 
   return (
     <>
       <Head>
-        <title>Users</title>
-        <meta property='og:title' content='Users' key='title' />
+        <title>Location</title>
+        <meta property='og:title' content='Location' key='title' />
       </Head>
-      {isSuccessDelete && (
-        <Message variant='success'>User has been deleted successfully.</Message>
-      )}
-      {isErrorDelete && <Message variant='danger'>{errorDelete}</Message>}
       {isSuccessUpdate && (
-        <Message variant='success'>User has been updated successfully.</Message>
+        <Message variant='success'>
+          Location has been updated successfully.
+        </Message>
       )}
       {isErrorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
       {isSuccessAdd && (
-        <Message variant='success'>User has been Created successfully.</Message>
+        <Message variant='success'>
+          Location has been Created successfully.
+        </Message>
       )}
       {isErrorAdd && <Message variant='danger'>{errorAdd}</Message>}
-
+      {isSuccessDelete && (
+        <Message variant='success'>
+          Location has been deleted successfully.
+        </Message>
+      )}
+      {isErrorDelete && <Message variant='danger'>{errorDelete}</Message>}
       <div
         className='modal fade'
-        id='editUserModal'
+        id='editLocationModal'
         data-bs-backdrop='static'
         data-bs-keyboard='false'
         tabIndex='-1'
-        aria-labelledby='editUserModalLabel'
+        aria-labelledby='editLocationModalLabel'
         aria-hidden='true'
       >
         <div className='modal-dialog'>
           <div className='modal-content modal-background'>
             <div className='modal-header'>
-              <h3 className='modal-title ' id='editUserModalLabel'>
-                {edit ? 'Edit User' : 'Add User'}
+              <h3 className='modal-title ' id='editLocationModalLabel'>
+                {edit ? 'Edit Location' : 'Add Location'}
               </h3>
               <button
                 type='button'
@@ -167,40 +163,25 @@ const Users = () => {
                 <Message variant='danger'>{error}</Message>
               ) : (
                 <form onSubmit={handleSubmit(submitHandler)}>
-                  {inputText({ register, errors, label: 'Name', name: 'name' })}
-                  {inputEmail({
+                  {inputText({ register, label: 'Name', errors, name: 'name' })}
+                  {inputTextArea({
                     register,
+                    label: 'Description',
                     errors,
-                    label: 'Email',
-                    name: 'email',
-                  })}
-                  {inputPassword({
-                    register,
-                    errors,
-                    label: 'Password',
-                    name: 'password',
-                    minLength: true,
-                    isRequired: false,
+                    name: 'description',
                   })}
 
-                  {inputPassword({
-                    register,
-                    errors,
-                    watch,
-                    name: 'confirmPassword',
-                    label: 'Confirm Password',
-                    validate: true,
-                    minLength: true,
-                    isRequired: false,
-                  })}
-
-                  {dynamicInputSelect({
-                    register,
-                    errors,
-                    data: groupData && groupData,
-                    name: 'group',
-                    label: 'Group',
-                  })}
+                  <div className='row'>
+                    <div className='col'>
+                      {inputCheckBox({
+                        register,
+                        errors,
+                        label: 'isActive',
+                        name: 'isActive',
+                        isRequired: false,
+                      })}
+                    </div>
+                  </div>
 
                   <div className='modal-footer'>
                     <button
@@ -238,7 +219,7 @@ const Users = () => {
             right: '20px',
           }}
           data-bs-toggle='modal'
-          data-bs-target='#editUserModal'
+          data-bs-target='#editLocationModal'
         >
           <FaPlus className='mb-1' />
         </button>
@@ -246,10 +227,11 @@ const Users = () => {
 
       <div className='row mt-2'>
         <div className='col-md-4 col-6 me-auto'>
-          <h3 className='fw-light font-monospace'>Users</h3>
+          <h3 className='fw-light font-monospace'>Locations</h3>
         </div>
-        <div className='col-md-4 col-6 ms-auto text-end'>
-          <Pagination data={data} setPage={setPage} />
+
+        <div className='col-md-4 col-6 ms-auto'>
+          <UploadExcel />
         </div>
       </div>
 
@@ -269,45 +251,49 @@ const Users = () => {
         <>
           <div className='table-responsive '>
             <table className='table table-sm hover bordered table-striped caption-top '>
-              <caption>{data && data.total} records were found</caption>
+              <caption>{data && data.length} records were found</caption>
               <thead>
                 <tr>
-                  <th>Joined Date</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Group</th>
+                  <th>Description</th>
+                  <th>Active</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {data &&
-                  data.data.map((user) => (
-                    <tr key={user._id}>
-                      <td>{moment(user.createdAt).format('llll')}</td>
-                      <td>{user.name}</td>
+                  data.map((location) => (
+                    <tr key={location._id}>
+                      <td>{location.name}</td>
+                      <td>{location.description}</td>
                       <td>
-                        <a href={`mailto:${user.email}`}>{user.email}</a>
+                        {location.isActive ? (
+                          <FaCheckCircle className='text-success mb-1' />
+                        ) : (
+                          <FaTimesCircle className='text-danger mb-1' />
+                        )}
                       </td>
-                      <td>{user.group}</td>
-                      <td className='btn-group'>
+
+                      <td className='btn-location'>
                         <button
-                          className='btn btn-primary btn-sm rounded-pill'
-                          onClick={() => editHandler(user)}
+                          className='btn btn-primary btn-sm rounded-pill '
+                          onClick={() => editHandler(location)}
                           data-bs-toggle='modal'
-                          data-bs-target='#editUserModal'
+                          data-bs-target='#editLocationModal'
                         >
                           <FaPenAlt />
                         </button>
 
                         <button
-                          className='btn btn-danger btn-sm ms-1 rounded-pill'
-                          onClick={() => deleteHandler(user._id)}
+                          className='btn btn-danger btn-sm rounded-pill ms-1'
+                          onClick={() => deleteHandler(location._id)}
                           disabled={isLoadingDelete}
                         >
                           {isLoadingDelete ? (
                             <span className='spinner-border spinner-border-sm' />
                           ) : (
                             <span>
+                              {' '}
                               <FaTrash />
                             </span>
                           )}
@@ -324,4 +310,6 @@ const Users = () => {
   )
 }
 
-export default dynamic(() => Promise.resolve(withAuth(Users)), { ssr: false })
+export default dynamic(() => Promise.resolve(withAuth(Location)), {
+  ssr: false,
+})

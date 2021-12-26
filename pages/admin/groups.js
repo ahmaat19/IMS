@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 import withAuth from '../../HOC/withAuth'
 import Message from '../../components/Message'
 import Loader from 'react-loader-spinner'
-import moment from 'moment'
 import {
   FaCheckCircle,
   FaPenAlt,
@@ -104,7 +103,7 @@ const Group = () => {
   }
 
   return (
-    <div className='container'>
+    <>
       <Head>
         <title>Group</title>
         <meta property='og:title' content='Group' key='title' />
@@ -244,15 +243,10 @@ const Group = () => {
         </button>
       </div>
 
-      <div className='d-flex justify-content-between align-items-center'>
-        <h3 className=''>Groups</h3>
-        <button
-          className='btn btn-primary '
-          data-bs-toggle='modal'
-          data-bs-target='#editGroupModal'
-        >
-          <FaPlus className='mb-1' />
-        </button>
+      <div className='row mt-2'>
+        <div className='col-md-4 col-6 me-auto'>
+          <h3 className='fw-light font-monospace'>Groups</h3>
+        </div>
       </div>
 
       {isLoading ? (
@@ -275,10 +269,9 @@ const Group = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>GROUP NAME</th>
-                  <th>ACTIVE</th>
-                  <th>DATE & TIME</th>
-                  <th>ACTIONS</th>
+                  <th>Name</th>
+                  <th>Active</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -297,7 +290,6 @@ const Group = () => {
                           <FaTimesCircle className='text-danger mb-1' />
                         )}
                       </td>
-                      <td>{moment(group.createdAt).format('llll')}</td>
 
                       <td className='btn-group'>
                         <button
@@ -331,7 +323,7 @@ const Group = () => {
           </div>
         </>
       )}
-    </div>
+    </>
   )
 }
 

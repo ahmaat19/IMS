@@ -98,7 +98,7 @@ const Route = () => {
   }
 
   return (
-    <div className='container'>
+    <>
       <Head>
         <title>Routes</title>
         <meta property='og:title' content='Routes' key='title' />
@@ -217,8 +217,10 @@ const Route = () => {
         </button>
       </div>
 
-      <div className='d-flex justify-content-between align-items-center'>
-        <h3 className=''>Routes</h3>
+      <div className='row mt-2'>
+        <div className='col-md-4 col-6 me-auto'>
+          <h3 className='fw-light font-monospace'>Routes</h3>
+        </div>
       </div>
 
       {isLoading ? (
@@ -240,11 +242,11 @@ const Route = () => {
               <caption>{data && data.length} records were found</caption>
               <thead>
                 <tr>
-                  <th>ROUTE NAME</th>
-                  <th>PATH</th>
-                  <th>MENU</th>
-                  <th>ACTIVE</th>
-                  <th>ACTIONS</th>
+                  <th>Name</th>
+                  <th>Path</th>
+                  <th>Menu</th>
+                  <th>Active</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -294,7 +296,7 @@ const Route = () => {
           </div>
         </>
       )}
-    </div>
+    </>
   )
 }
 

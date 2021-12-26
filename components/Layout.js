@@ -1,5 +1,6 @@
 import Navigation from './Navigation'
 import Head from 'next/head'
+import Footer from './Footer'
 
 export default function Layout({ children }) {
   return (
@@ -7,9 +8,11 @@ export default function Layout({ children }) {
       <Head>
         <title>Inventory Software</title>
         <meta property='og:title' content='Inventory Software' key='title' />
+        <link rel='shortcut icon' href='logo.svg' />
       </Head>
       <Navigation />
-      <div className='container'>{children}</div>
+      <main className='container'>{children}</main>
+      <Footer />
     </>
   )
 }
