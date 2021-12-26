@@ -19,10 +19,10 @@ import { Confirm } from '../../components/Confirm'
 import { useForm } from 'react-hook-form'
 import {
   inputCheckBox,
+  inputFile,
   inputText,
   inputTextArea,
 } from '../../utils/dynamicForm'
-import UploadExcel from '../../components/UploadExcel'
 
 const Location = () => {
   const { getLocations, updateLocation, addLocation, deleteLocation } =
@@ -82,7 +82,7 @@ const Location = () => {
     confirmAlert(Confirm(() => deleteMutateAsync(id)))
   }
 
-  const submitHandler = (data) => {
+  const submitHandler = async (data) => {
     edit
       ? updateMutateAsync({
           _id: id,
@@ -170,7 +170,6 @@ const Location = () => {
                     errors,
                     name: 'description',
                   })}
-
                   <div className='row'>
                     <div className='col'>
                       {inputCheckBox({
@@ -182,7 +181,6 @@ const Location = () => {
                       })}
                     </div>
                   </div>
-
                   <div className='modal-footer'>
                     <button
                       type='button'
@@ -230,9 +228,9 @@ const Location = () => {
           <h3 className='fw-light font-monospace'>Locations</h3>
         </div>
 
-        <div className='col-md-4 col-6 ms-auto'>
+        {/* <div className='col-md-4 col-6 ms-auto'>
           <UploadExcel />
-        </div>
+        </div> */}
       </div>
 
       {isLoading ? (

@@ -16,7 +16,7 @@ const constants = {
 handler.use(isAuth)
 handler.get(async (req, res) => {
   await dbConnect()
-  const obj = await constants.model.find({}).sort({ createdAt: -1 })
+  const obj = await constants.model.find({}).lean().sort({ createdAt: -1 })
   res.send(obj)
 })
 
