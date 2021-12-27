@@ -3,7 +3,7 @@ import User from './User'
 
 const categoryScheme = mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true, trim: true },
     isActive: { type: Boolean, default: true },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

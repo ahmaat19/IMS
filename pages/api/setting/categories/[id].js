@@ -24,8 +24,11 @@ handler.put(async (req, res) => {
   const obj = await constants.model.findById(_id)
 
   if (obj) {
-    const exist = await constants.model.find({ _id: { $ne: _id }, name })
-    if (exist.length === 0) {
+    const exist = await constants.model.exists({
+      _id: { $ne: _id },
+      name: { $regex: name, $options: 'i' },
+    })
+    if (!exist) {
       obj.name = name
       obj.isActive = isActive
       obj.updatedBy = updatedBy

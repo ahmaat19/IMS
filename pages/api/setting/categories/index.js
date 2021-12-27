@@ -26,7 +26,11 @@ handler.post(async (req, res) => {
   const { isActive, name } = req.body
   const createdBy = req.user.id
 
-  const exist = await constants.model.findOne({ name })
+  const exist = await constants.model.exists({
+    name: { $regex: name, $options: 'i' },
+  })
+
+  console.log(exist)
   if (exist) {
     return res.status(400).send(constants.existed)
   }
