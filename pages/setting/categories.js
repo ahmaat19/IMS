@@ -13,7 +13,7 @@ import {
   FaTrash,
 } from 'react-icons/fa'
 
-import useLocations from '../../api/locations'
+import useCategories from '../../api/categories'
 
 import { CSVLink } from 'react-csv'
 
@@ -26,9 +26,9 @@ import {
   inputTextArea,
 } from '../../utils/dynamicForm'
 
-const Location = () => {
-  const { getLocations, updateLocation, addLocation, deleteLocation } =
-    useLocations()
+const Category = () => {
+  const { getCategories, updateCategory, addCategory, deleteCategory } =
+    useCategories()
   const {
     register,
     handleSubmit,
@@ -41,7 +41,7 @@ const Location = () => {
     },
   })
 
-  const { data, isLoading, isError, error } = getLocations
+  const { data, isLoading, isError, error } = getCategories
 
   const {
     isLoading: isLoadingUpdate,
@@ -49,7 +49,7 @@ const Location = () => {
     error: errorUpdate,
     isSuccess: isSuccessUpdate,
     mutateAsync: updateMutateAsync,
-  } = updateLocation
+  } = updateCategory
 
   const {
     isLoading: isLoadingDelete,
@@ -57,7 +57,7 @@ const Location = () => {
     error: errorDelete,
     isSuccess: isSuccessDelete,
     mutateAsync: deleteMutateAsync,
-  } = deleteLocation
+  } = deleteCategory
 
   const {
     isLoading: isLoadingAdd,
@@ -65,7 +65,7 @@ const Location = () => {
     error: errorAdd,
     isSuccess: isSuccessAdd,
     mutateAsync: addMutateAsync,
-  } = addLocation
+  } = addCategory
 
   const [id, setId] = useState(null)
   const [edit, setEdit] = useState(false)
@@ -89,59 +89,57 @@ const Location = () => {
       ? updateMutateAsync({
           _id: id,
           name: data.name,
-          description: data.description,
           isActive: data.isActive,
         })
       : addMutateAsync(data)
   }
 
-  const editHandler = (location) => {
-    setId(location._id)
+  const editHandler = (category) => {
+    setId(category._id)
     setEdit(true)
-    setValue('name', location.name)
-    setValue('description', location.description)
-    setValue('isActive', location.isActive)
+    setValue('name', category.name)
+    setValue('isActive', category.isActive)
   }
 
   return (
     <>
       <Head>
-        <title>Location</title>
-        <meta property='og:title' content='Location' key='title' />
+        <title>Category</title>
+        <meta property='og:title' content='Category' key='title' />
       </Head>
       {isSuccessUpdate && (
         <Message variant='success'>
-          Location has been updated successfully.
+          Category has been updated successfully.
         </Message>
       )}
       {isErrorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
       {isSuccessAdd && (
         <Message variant='success'>
-          Location has been Created successfully.
+          Category has been Created successfully.
         </Message>
       )}
       {isErrorAdd && <Message variant='danger'>{errorAdd}</Message>}
       {isSuccessDelete && (
         <Message variant='success'>
-          Location has been deleted successfully.
+          Category has been deleted successfully.
         </Message>
       )}
       {isErrorDelete && <Message variant='danger'>{errorDelete}</Message>}
 
       <div
         className='modal fade'
-        id='editLocationModal'
+        id='editCategoryModal'
         data-bs-backdrop='static'
         data-bs-keyboard='false'
         tabIndex='-1'
-        aria-labelledby='editLocationModalLabel'
+        aria-labelledby='editCategoryModalLabel'
         aria-hidden='true'
       >
         <div className='modal-dialog'>
           <div className='modal-content modal-background'>
             <div className='modal-header'>
-              <h3 className='modal-title ' id='editLocationModalLabel'>
-                {edit ? 'Edit Location' : 'Add Location'}
+              <h3 className='modal-title ' id='editCategoryModalLabel'>
+                {edit ? 'Edit Category' : 'Add Category'}
               </h3>
               <button
                 type='button'
@@ -167,12 +165,6 @@ const Location = () => {
               ) : (
                 <form onSubmit={handleSubmit(submitHandler)}>
                   {inputText({ register, label: 'Name', errors, name: 'name' })}
-                  {inputTextArea({
-                    register,
-                    label: 'Description',
-                    errors,
-                    name: 'description',
-                  })}
                   <div className='row'>
                     <div className='col'>
                       {inputCheckBox({
@@ -220,7 +212,7 @@ const Location = () => {
             right: '20px',
           }}
           data-bs-toggle='modal'
-          data-bs-target='#editLocationModal'
+          data-bs-target='#editCategoryModal'
         >
           <FaPlus className='mb-1' />
         </button>
@@ -240,7 +232,7 @@ const Location = () => {
 
       <div className='row mt-2'>
         <div className='col-md-4 col-6 me-auto'>
-          <h3 className='fw-light font-monospace'>Locations</h3>
+          <h3 className='fw-light font-monospace'>Categories</h3>
         </div>
       </div>
 
@@ -264,38 +256,36 @@ const Location = () => {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Description</th>
                   <th>Active</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {data &&
-                  data.map((location) => (
-                    <tr key={location._id}>
-                      <td>{location.name}</td>
-                      <td>{location.description}</td>
+                  data.map((category) => (
+                    <tr key={category._id}>
+                      <td>{category.name}</td>
                       <td>
-                        {location.isActive ? (
+                        {category.isActive ? (
                           <FaCheckCircle className='text-success mb-1' />
                         ) : (
                           <FaTimesCircle className='text-danger mb-1' />
                         )}
                       </td>
 
-                      <td className='btn-location'>
+                      <td className='btn-category'>
                         <button
                           className='btn btn-primary btn-sm rounded-pill '
-                          onClick={() => editHandler(location)}
+                          onClick={() => editHandler(category)}
                           data-bs-toggle='modal'
-                          data-bs-target='#editLocationModal'
+                          data-bs-target='#editCategoryModal'
                         >
                           <FaPenAlt />
                         </button>
 
                         <button
                           className='btn btn-danger btn-sm rounded-pill ms-1'
-                          onClick={() => deleteHandler(location._id)}
+                          onClick={() => deleteHandler(category._id)}
                           disabled={isLoadingDelete}
                         >
                           {isLoadingDelete ? (
@@ -319,6 +309,6 @@ const Location = () => {
   )
 }
 
-export default dynamic(() => Promise.resolve(withAuth(Location)), {
+export default dynamic(() => Promise.resolve(withAuth(Category)), {
   ssr: false,
 })
